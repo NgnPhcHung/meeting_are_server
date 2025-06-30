@@ -101,7 +101,6 @@ export class PlaygroundResolver {
       `new_room`,
       userId.toString(),
     );
-    console.log('userInList', userInList);
     if (userInList) {
       await this.redisSerivce.deleteData(`player:${userId}`);
       await this.redisSerivce.removeFromHash('new_room', userId.toString());
@@ -141,8 +140,6 @@ export class PlaygroundResolver {
     resolve: (value) => value.userDisconnected,
   })
   userDisconnected() {
-    console.log('disconnect Subscription');
-
     return this.pubSub.asyncIterableIterator('USER_DISCONNECTED');
   }
 }
