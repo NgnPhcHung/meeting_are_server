@@ -9,7 +9,9 @@ interface DecodeHeader {
 }
 
 export const decodeHeader = (req: Request): DecodeHeader => {
-  const authHeader = req.headers['authorization'];
+  const authHeader =
+    req.headers['authorization'] || req['cookies']['authorization'];
+  console.log({ authHeader });
 
   if (!authHeader) {
     return undefined;
