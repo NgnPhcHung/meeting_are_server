@@ -1,23 +1,16 @@
 import { CurrentUser } from '@decorators/current-user';
 import { RedisService } from '@modules/redis/redis.service';
 import { Inject } from '@nestjs/common';
-import {
-  Args,
-  Float,
-  Int,
-  Mutation,
-  Query,
-  Resolver,
-  Subscription,
-} from '@nestjs/graphql';
+import { Args, Float, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PubSubEngine } from 'graphql-subscriptions';
 import { Player } from '../dtos/playground.model';
-import { RoomModel } from '../dtos/room.model';
 import { PlaygroundService } from '../services/playground.service';
+import { PlaygroundAction } from '../subscriptions/playground.action';
 
 @Resolver(() => Player)
 export class PlaygroundResolver {
   constructor(
+    @Inject('PUB_SUB') private pubSub: PubSubEngine,
     private redisSerivce: RedisService,
     private playgroundService: PlaygroundService,
   ) {}
@@ -49,7 +42,9 @@ export class PlaygroundResolver {
     };
 
     await this.redisSerivce.pushToList('new_room', newPlayer);
-    await this.pubSub.publish('USER_JOIN', { userJoined: { userId } });
+    await this.pubSub.publish(PlaygroundAction.USER_JOINED, {
+      userJoined: { userId },
+    });
     return newPlayer;
   }
 
@@ -74,7 +69,9 @@ export class PlaygroundResolver {
     }
 
     this.players[userId] = currentPlayer;
-    await this.pubSub.publish('PLAYER_MOVED', { playerMoved: currentPlayer });
+    await this.pubSub.publish(PlaygroundAction.USER_MOVED, {
+      playerMoved: currentPlayer,
+    });
     return currentPlayer;
   }
 
@@ -87,7 +84,7 @@ export class PlaygroundResolver {
     if (userInList) {
       await this.redisSerivce.deleteData(`player:${userId}`);
       await this.redisSerivce.removeFromHash('new_room', userId.toString());
-      await this.pubSub.publish('USER_DISCONNECTED', {
+      await this.pubSub.publish(PlaygroundAction.USER_DISCONNECTED, {
         userDisconnected: userInList,
       });
       return userInList;
