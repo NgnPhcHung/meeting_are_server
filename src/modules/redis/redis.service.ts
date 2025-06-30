@@ -84,6 +84,10 @@ export class RedisService {
       JSON.stringify(value),
     );
   }
+  async removeFromHash(key: string, value: string) {
+    const keyName = `room:list:${key}`;
+    return this.redis.hdel(keyName, value);
+  }
 
   async getList<T>(key: string): Promise<T[]> {
     const keyName = `room:list:${key}`;

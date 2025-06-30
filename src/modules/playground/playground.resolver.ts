@@ -13,6 +13,7 @@ import { loadImage, createCanvas } from 'canvas';
 import { PubSubEngine } from 'graphql-subscriptions';
 import { Player } from './dtos/playground.model';
 import { RedisService } from '@modules/redis/redis.service';
+import { CurrentUser } from '@decorators/current-user';
 
 @Resolver(() => Player)
 export class PlaygroundResolver {
@@ -54,8 +55,6 @@ export class PlaygroundResolver {
       userId.toString(),
     );
 
-    console.log('---------------');
-
     if (existedUser) {
       return existedUser;
     }
@@ -92,10 +91,31 @@ export class PlaygroundResolver {
     }
 
     this.players[userId] = currentPlayer;
-
-    console.log({ userId, x, y });
     await this.pubSub.publish('PLAYER_MOVED', { playerMoved: currentPlayer });
     return currentPlayer;
+  }
+
+  @Mutation(() => Player)
+  async disconnectUser(@CurrentUser() userId: number) {
+    let userInList: Player[] = await this.redisSerivce.getHashKey(
+      `new_room`,
+      userId.toString(),
+    );
+    console.log('userInList', userInList);
+    if (userInList) {
+      await this.redisSerivce.deleteData(`player:${userId}`);
+      await this.redisSerivce.removeFromHash('new_room', userId.toString());
+      await this.pubSub.publish('USER_DISCONNECTED', {
+        userDisconnected: userInList,
+      });
+      return userInList;
+    }
+
+    return {
+      userId: -1,
+      position: { x: -1, y: -1 },
+      avatarImg: '',
+    };
   }
 
   @Subscription(() => Player, {
@@ -115,5 +135,14 @@ export class PlaygroundResolver {
   })
   userMoved() {
     return this.pubSub.asyncIterableIterator('PLAYER_MOVED');
+  }
+
+  @Subscription(() => Player, {
+    resolve: (value) => value.userDisconnected,
+  })
+  userDisconnected() {
+    console.log('disconnect Subscription');
+
+    return this.pubSub.asyncIterableIterator('USER_DISCONNECTED');
   }
 }

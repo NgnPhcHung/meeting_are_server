@@ -36,6 +36,7 @@ type Mutation {
   refreshAccessToken: AuthResponse!
   userJoinPlayground(userId: Int!): Player!
   updatePlayerPosition(userId: Int!, x: Float!, y: Float!): Player!
+  disconnectUser: Player!
 }
 
 input SignInDto {
@@ -53,4 +54,5 @@ input SignUpDto {
 type Subscription {
   userJoined: Player!
   userMoved: Player!
+  userDisconnected: Player!
 }
