@@ -1,15 +1,21 @@
 import { Module } from '@nestjs/common';
 import { PubSub } from 'graphql-subscriptions';
-import { PlaygroundResolver } from './playground.resolver';
+import { RoomSerivice } from './services/room.service';
+import { PlaygroundService } from './services/playground.service';
+import { PlaygroundResolver } from './resolvers/playground.resolver';
+import { RoomResolver } from './resolvers/room.resolver';
 
 @Module({
   imports: [],
   providers: [
     PlaygroundResolver,
+    RoomResolver,
     {
       provide: 'PUB_SUB',
       useValue: new PubSub(),
     },
+    RoomSerivice,
+    PlaygroundService,
   ],
   exports: [],
 })

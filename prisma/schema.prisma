@@ -19,8 +19,21 @@ model Users {
   lastname  String?
   role      UserRole @default(USER)
   isSynced  Boolean? @default(false) @map("is_synced")
+  Rooms     Rooms[]
 
   @@map("users")
+}
+
+model Rooms {
+  id           Int     @id @default(autoincrement())
+  hash         String? @db.VarChar(255)
+  roomName     String  @map("room_name")
+  owner        Users   @relation(fields: [usersId], references: [id])
+  ownerId      Int
+  usersId      Int     @map("user_id")
+  participants Int[]
+
+  @@map("rooms")
 }
 
 enum UserRole {
