@@ -12,10 +12,7 @@ export class UserResolver {
   @Query(() => UserModel)
   @UseInterceptors(LoggingInterceptor)
   async getMe(@CurrentUser() userId: number) {
-    console.log('userid---------------', userId);
-
     const user = await this.userService.findById(userId);
-    console.log({ user });
 
     return user;
   }

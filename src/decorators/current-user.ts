@@ -10,10 +10,6 @@ export const CurrentUser = createParamDecorator(
     const request = context.getContext().req;
     const decodedHeader = decodeHeader(request);
 
-    console.log('-----------', request);
-
-    console.log('Go into current user');
-
     if (!decodedHeader) {
       console.log({ throw: 'thowing' });
 
