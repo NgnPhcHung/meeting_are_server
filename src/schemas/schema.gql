@@ -1,0 +1,56 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserModel {
+  id: Int!
+  email: String!
+  name: String
+  role: String!
+}
+
+type AuthResponse {
+  accessToken: String!
+}
+
+type Position {
+  x: Float!
+  y: Float!
+}
+
+type Player {
+  userId: Int!
+  position: Position!
+  avatarImg: String!
+}
+
+type Query {
+  ping: String!
+  getMe: UserModel!
+  players: [Player!]!
+}
+
+type Mutation {
+  login(input: SignInDto!): AuthResponse!
+  register(input: SignUpDto!): AuthResponse!
+  refreshAccessToken: AuthResponse!
+  userJoinPlayground(userId: Int!): Player!
+  updatePlayerPosition(userId: Int!, x: Float!, y: Float!): Player!
+}
+
+input SignInDto {
+  username: String!
+  password: String!
+}
+
+input SignUpDto {
+  email: String!
+  password: String!
+  username: String!
+  role: String!
+}
+
+type Subscription {
+  userJoined: Player!
+  userMoved: Player!
+}
