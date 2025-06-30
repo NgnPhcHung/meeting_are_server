@@ -2,6 +2,7 @@ import { Resolver, Subscription } from '@nestjs/graphql';
 import { Player } from '../dtos/playground.model';
 import { Inject } from '@nestjs/common';
 import { PubSubEngine } from 'graphql-subscriptions';
+import { PlaygroundAction } from './playground.action';
 
 @Resolver(() => Player)
 export class PlaygroundSubscription {
@@ -11,7 +12,7 @@ export class PlaygroundSubscription {
     resolve: (value) => value.userJoined,
   })
   userJoined() {
-    return this.pubSub.asyncIterableIterator('USER_JOIN');
+    return this.pubSub.asyncIterableIterator(PlaygroundAction.USER_JOINED);
   }
 
   @Subscription(() => Player, {
@@ -23,13 +24,15 @@ export class PlaygroundSubscription {
     },
   })
   userMoved() {
-    return this.pubSub.asyncIterableIterator('PLAYER_MOVED');
+    return this.pubSub.asyncIterableIterator(PlaygroundAction.USER_MOVED);
   }
 
   @Subscription(() => Player, {
     resolve: (value) => value.userDisconnected,
   })
   userDisconnected() {
-    return this.pubSub.asyncIterableIterator('USER_DISCONNECTED');
+    return this.pubSub.asyncIterableIterator(
+      PlaygroundAction.USER_DISCONNECTED,
+    );
   }
 }
