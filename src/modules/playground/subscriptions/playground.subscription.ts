@@ -1,7 +1,7 @@
-import { Resolver, Subscription } from '@nestjs/graphql';
-import { Player } from '../dtos/playground.model';
 import { Inject } from '@nestjs/common';
+import { Resolver, Subscription } from '@nestjs/graphql';
 import { PubSubEngine } from 'graphql-subscriptions';
+import { Player } from '../dtos/playground.model';
 import { PlaygroundAction } from './playground.action';
 
 @Resolver(() => Player)

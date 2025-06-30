@@ -5,8 +5,8 @@ export class RoomModel {
   @Field()
   roomName: string;
 
-  @Field(Int)
-  owner: number;
+  @Field(() => Int)
+  ownerId: number;
 
   @Field(() => [Int])
   participants: number[];

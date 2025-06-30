@@ -5,9 +5,10 @@ import { PlaygroundService } from './services/playground.service';
 import { PlaygroundResolver } from './resolvers/playground.resolver';
 import { RoomResolver } from './resolvers/room.resolver';
 import { PlaygroundSubscription } from './subscriptions/playground.subscription';
+import { PrismaModule } from '@modules/prisma/prisma.module';
 
 @Module({
-  imports: [],
+  imports: [PrismaModule],
   providers: [
     PlaygroundResolver,
     PlaygroundSubscription,
