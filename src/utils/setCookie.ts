@@ -11,7 +11,7 @@ export const setCookie = (
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: +process.env.REFRESH_COOKIE_EXPIRED_IN,
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days,
     path: '/',
   });
 };

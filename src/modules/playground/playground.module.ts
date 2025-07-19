@@ -4,14 +4,14 @@ import { RoomSerivice } from './services/room.service';
 import { PlaygroundService } from './services/playground.service';
 import { PlaygroundResolver } from './resolvers/playground.resolver';
 import { RoomResolver } from './resolvers/room.resolver';
-import { PlaygroundSubscription } from './subscriptions/playground.subscription';
 import { PrismaModule } from '@modules/prisma/prisma.module';
+import { AppRedisModule } from '@modules/redis/redis.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AppRedisModule],
   providers: [
     PlaygroundResolver,
-    PlaygroundSubscription,
+    // PlaygroundSubscription,
     RoomResolver,
     {
       provide: 'PUB_SUB',

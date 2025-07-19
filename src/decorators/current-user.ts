@@ -9,13 +9,12 @@ export const CurrentUser = createParamDecorator(
     const context = GqlExecutionContext.create(ctx);
     const request = context.getContext().req;
     const decodedHeader = decodeHeader(request);
+    console.log('decodedHeader', decodedHeader);
 
     if (!decodedHeader) {
-      console.log({ throw: 'thowing' });
-
       throw new AppUnauthorizedRequest(ERROR_CODE.FAILED_TO_DECODE_AUTH);
     }
 
-    return decodedHeader.userId;
+    return decodedHeader.id;
   },
 );

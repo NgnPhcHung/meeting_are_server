@@ -11,6 +11,7 @@ type UserModel {
 
 type AuthResponse {
   accessToken: String!
+  refreshToken: String!
 }
 
 type Position {

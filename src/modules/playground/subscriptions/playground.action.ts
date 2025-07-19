@@ -1,5 +1,5 @@
-export enum PlaygroundAction {
-  USER_JOINED = 'user_joined',
-  USER_MOVED = 'user_moved',
-  USER_DISCONNECTED = 'user_disconnected',
-}
+export const PlaygroundAction = {
+  USER_JOINED: 'userJoined',
+  USER_MOVED: 'userMoved',
+  USER_DISCONNECTED: 'userDisconnected',
+};

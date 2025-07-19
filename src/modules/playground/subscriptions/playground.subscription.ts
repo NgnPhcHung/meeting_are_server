@@ -9,7 +9,7 @@ export class PlaygroundSubscription {
   constructor(@Inject('PUB_SUB') private pubSub: PubSubEngine) {}
 
   @Subscription(() => Player, {
-    resolve: (value) => value.userJoined,
+    resolve: (payload) => payload.userJoined,
   })
   userJoined() {
     return this.pubSub.asyncIterableIterator(PlaygroundAction.USER_JOINED);
@@ -17,13 +17,12 @@ export class PlaygroundSubscription {
 
   @Subscription(() => Player, {
     resolve: (payload) => {
+      console.log('Payload received in subscription:', payload);
       return payload.playerMoved;
-    },
-    filter: (payload, variables) => {
-      return payload.playerMoved.id !== variables.currentUserId;
     },
   })
   userMoved() {
+    console.log('Client subscribed to userMoved');
     return this.pubSub.asyncIterableIterator(PlaygroundAction.USER_MOVED);
   }
 
