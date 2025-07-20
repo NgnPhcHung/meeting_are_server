@@ -11,7 +11,6 @@ import { AppRedisModule } from '@modules/redis/redis.module';
   imports: [PrismaModule, AppRedisModule],
   providers: [
     PlaygroundResolver,
-    // PlaygroundSubscription,
     RoomResolver,
     {
       provide: 'PUB_SUB',
