@@ -14,6 +14,7 @@ import { PrismaModule } from '@modules/prisma/prisma.module';
 import { AccessTokenBlacklistGuard } from '@guards/blacklist.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { PlaygroundModule } from '@modules/playground/playground.module';
+import { SocketModule } from '@modules/socket/socket.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { PlaygroundModule } from '@modules/playground/playground.module';
     PrismaModule,
     JwtModule.register({}),
     PlaygroundModule,
+    SocketModule,
   ],
   controllers: [AppController],
   providers: [

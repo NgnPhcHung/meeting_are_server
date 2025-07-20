@@ -19,6 +19,6 @@ import { AppRedisModule } from '@modules/redis/redis.module';
     RoomSerivice,
     PlaygroundService,
   ],
-  exports: [],
+  exports: [PlaygroundService, PlaygroundResolver],
 })
 export class PlaygroundModule {}

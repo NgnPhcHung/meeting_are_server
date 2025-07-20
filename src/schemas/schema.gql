@@ -34,7 +34,7 @@ type RoomModel {
 type Query {
   ping: String!
   getMe: UserModel!
-  players: [Player!]!
+  players: [Player]
 }
 
 type Mutation {
@@ -42,8 +42,6 @@ type Mutation {
   register(input: SignUpDto!): AuthResponse!
   refreshAccessToken: AuthResponse!
   userJoinPlayground(userId: Int!): Player!
-  updatePlayerPosition(userId: Int!, x: Float!, y: Float!): Player!
-  disconnectUser: Player!
   createRoom(room_name: String!): RoomModel!
 }
 
