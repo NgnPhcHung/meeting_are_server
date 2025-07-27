@@ -1,8 +1,8 @@
 import { Query, Resolver } from '@nestjs/graphql';
 import { UserService } from '../services/user.service';
 import { UserModel } from '@modules/auth/models/user.model';
-import { CurrentUser } from '@decorators/current-user';
 import { Logged } from 'decologger';
+import { CurrentUser } from '@decorators/currentUser';
 
 @Resolver(() => UserModel)
 @Logged()

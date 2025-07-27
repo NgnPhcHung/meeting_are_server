@@ -46,7 +46,7 @@ export class AccessTokenBlacklistGuard implements CanActivate {
 
   private extractTokenFromHeader(request: Request): string | null {
     try {
-      const authHeader = request.headers['authorization'];
+      const authHeader = request.cookies['authorization'];
       if (!authHeader) return null;
 
       const [bearer, token] = authHeader.split(' ');

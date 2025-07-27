@@ -1,4 +1,5 @@
-import { Inject, UseFilters } from '@nestjs/common';
+import { PlaygroundResolver } from '@modules/playground/resolvers/playground.resolver';
+import { UseFilters } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   ConnectedSocket,
@@ -12,7 +13,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { WebsocketsExceptionFilter } from './socket.exception-filter';
-import { PlaygroundResolver } from '@modules/playground/resolvers/playground.resolver';
+import { Logged } from 'decologger';
 
 @WebSocketGateway({
   cors: {
@@ -27,7 +28,12 @@ export class SocketService
 {
   private positions = new Map<
     string,
-    { position: { x: number; y: number }; avatarImg: string; userId: number }
+    {
+      position: { x: number; y: number };
+      avatarImg: string;
+      userId: number;
+      roomName?: string;
+    }
   >();
 
   @WebSocketServer()
@@ -46,21 +52,63 @@ export class SocketService
   async handleConnection(socket: Socket) {
     console.log(`Connected: ${socket.id}`);
     const userId = socket.handshake.query.userId as string;
+    const roomName = socket.handshake.query.roomName as string;
+
     if (!userId) {
-      console.error('No userId provided in handshake');
       socket.disconnect(true);
       return;
     }
-    console.log(`User ${userId} connected with socket ${socket.id}`);
+
+    // if (roomName) {
+    //   socket.join(roomName);
+    //   console.log(`Socket ${socket.id} joined room ${roomName}`);
+    //   this.positions.set(socket.id, {
+    //     userId: parseInt(userId, 10),
+    //     position: { x: 100, y: 100 },
+    //     avatarImg: '',
+    //     roomName,
+    //   });
+    //   this.server
+    //     .to(roomName)
+    //     .emit('player_joined', { userId: parseInt(userId, 10) });
+    // }
   }
 
   handleDisconnect(socket: Socket) {
     console.log(`Disconnected: ${socket.id}`);
     const userId = socket.handshake.query.userId as string;
-    if (userId) {
+    const roomName = socket.handshake.query.roomName as string;
+
+    if (userId && roomName) {
       this.positions.delete(socket.id);
-      this.server.emit('player_left', { userId: parseInt(userId, 10) });
+      this.server
+        .to(roomName)
+        .emit('player_left', { userId: parseInt(userId, 10) });
+      socket.leave(roomName);
     }
+  }
+
+  @SubscribeMessage('join_room')
+  @Logged({
+    formatter: (data) =>
+      `Execute [${data.methodName}] with params ${data.params}`,
+  })
+  async handleJoinRoom(
+    @MessageBody() data: { roomName: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const { roomName } = data;
+    if (!roomName) {
+      socket.emit('error', { message: 'Room name is required' });
+      return;
+    }
+
+    socket.join(roomName);
+    console.log(`Socket ${socket.id} joined room ${roomName}`);
+
+    this.server.to(roomName).emit('player_joined', {
+      userId: parseInt(socket.handshake.query.userId as string, 10),
+    });
   }
 
   @SubscribeMessage('move')
@@ -70,17 +118,17 @@ export class SocketService
       position: { x: number; y: number };
       avatarImg: string;
       userId: number;
+      roomName: string;
     },
     @ConnectedSocket() socket: Socket,
   ) {
-    console.log('Socket move event:', { socketId: socket.id, data });
-
     this.positions.set(socket.id, { ...data, position: data.position });
     try {
       await this.playgroundResolver.updatePlayerPositionDirectly(
         data.userId,
         data.position.x,
         data.position.y,
+        data.roomName,
       );
       socket.broadcast.emit('moved', {
         userId: data.userId,

@@ -9,8 +9,9 @@ import {
 import { Inject } from '@nestjs/common';
 import { PubSub } from 'graphql-subscriptions';
 import { RedisService } from '@modules/redis/redis.service';
-import { Player } from '../dtos/playground.model';
 import { PlaygroundService } from '../services/playground.service';
+import { Player } from '../models/playground.model';
+import { Logged } from 'decologger';
 
 export enum PlaygroundAction {
   USER_JOINED = 'USER_JOINED',
@@ -27,28 +28,28 @@ export class PlaygroundResolver {
   ) {}
 
   @Query(() => [Player], { nullable: 'itemsAndList' })
-  async players(): Promise<Player[]> {
-    const players = await this.redisService.getList<Player>('new_room');
-    console.log('Players query:', players);
+  async players(@Args('roomName') roomName: string): Promise<Player[]> {
+    const players = await this.redisService.getList<Player>(roomName);
     return players || [];
   }
 
   @Mutation(() => Player)
+  @Logged({
+    formatter: (data) => `Execute [${data.methodName}] with ${data.params}`,
+  })
   async userJoinPlayground(
     @Args('userId', { type: () => Int }) userId: number,
+    @Args('roomName') roomName: string,
   ): Promise<Player> {
-    console.log('userJoinPlayground called with userId:', userId);
     const existedUser = await this.redisService.getHashKey<Player>(
-      'new_room',
+      roomName,
       userId.toString(),
     );
-    console.log('Existing user:', existedUser);
 
     if (existedUser) {
       await this.pubSub.publish(PlaygroundAction.USER_JOINED, {
         userJoined: existedUser,
       });
-      console.log('Published USER_JOINED for existing user:', existedUser);
       return existedUser;
     }
 
@@ -58,49 +59,54 @@ export class PlaygroundResolver {
       position: { x: 100, y: 100 },
     };
 
-    await this.redisService.pushToList('new_room', newPlayer);
+    await this.redisService.pushToList(roomName, newPlayer);
     await this.pubSub.publish(PlaygroundAction.USER_JOINED, {
       userJoined: newPlayer,
     });
-    console.log('Published USER_JOINED for new player:', newPlayer);
     return newPlayer;
   }
 
   @Subscription(() => Player)
+  @Logged({
+    formatter: (data) => `Execute [${data.methodName}] with ${data.params}`,
+  })
   userJoined() {
-    console.log('Client subscribed to userJoined');
     return this.pubSub.asyncIterableIterator(PlaygroundAction.USER_JOINED);
   }
 
   @Subscription(() => Player)
   userMoved() {
-    console.log('Client subscribed to userMoved');
     return this.pubSub.asyncIterableIterator(PlaygroundAction.USER_MOVED);
   }
 
   @Subscription(() => Player)
+  @Logged({
+    formatter: (data) => `Execute [${data.methodName}] with ${data.params}`,
+  })
   userDisconnected() {
-    console.log('Client subscribed to userDisconnected');
     return this.pubSub.asyncIterableIterator(
       PlaygroundAction.USER_DISCONNECTED,
     );
   }
 
-  async updatePlayerPositionDirectly(userId: number, x: number, y: number) {
-    console.log('updatePlayerPositionDirectly called with:', { userId, x, y });
+  async updatePlayerPositionDirectly(
+    userId: number,
+    x: number,
+    y: number,
+    roomName: string,
+  ) {
     const player = await this.redisService.getHashKey<Player>(
-      'new_room',
+      roomName,
       userId.toString(),
     );
     if (!player) {
       throw new Error(`Player with userId ${userId} not found`);
     }
     const updatedPlayer = { ...player, position: { x, y } };
-    await this.redisService.pushToList('new_room', updatedPlayer);
+    await this.redisService.pushToList(roomName, updatedPlayer);
     await this.pubSub.publish(PlaygroundAction.USER_MOVED, {
       userMoved: updatedPlayer,
     });
-    console.log('Published USER_MOVED:', updatedPlayer);
     return updatedPlayer;
   }
 }

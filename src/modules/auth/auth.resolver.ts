@@ -26,12 +26,23 @@ export class AuthResolver {
 
   @Public()
   @Mutation(() => AuthResponse)
+  @Logged({
+    formatter(data) {
+      return `Called  refreshAccessToken`;
+    },
+  })
   async refreshAccessToken(@Context() context: GraphQLContext) {
-    const { req } = context;
+    const { req, res } = context;
     const refreshToken = req.cookies['refreshToken'];
-    const accessToken = await this.authService.refreshTokens(refreshToken);
-    console.log('accessToken', accessToken);
+    console.log('refreshToken', refreshToken);
+    const accessToken = await this.authService.refreshAccessToken(refreshToken);
 
+    res.cookie('authorization', `Bearer ${accessToken}`, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: Number(process.env.ACCESS_HEADER_EXPIRED_IN),
+    });
     return { accessToken };
   }
 
