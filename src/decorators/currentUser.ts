@@ -11,11 +11,9 @@ export const CurrentUser = createParamDecorator(
     const decodedHeader = decodeHeader(request);
 
     if (!decodedHeader) {
-      console.log({ throw: 'thowing' });
-
       throw new AppUnauthorizedRequest(ERROR_CODE.FAILED_TO_DECODE_AUTH);
     }
 
-    return decodedHeader.userId;
+    return decodedHeader.id;
   },
 );

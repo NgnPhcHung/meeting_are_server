@@ -1,14 +1,9 @@
 import { ERROR_CODE } from '@consts/error-code';
+import { UserJWT } from '@types';
 import { AppUnauthorizedRequest } from '@utils/network/exception';
-import { UserRole } from 'generated/prisma';
 import * as jwt from 'jsonwebtoken';
 
-interface DecodeHeader {
-  userId: number;
-  role: UserRole;
-}
-
-export const decodeHeader = (req: Request): DecodeHeader => {
+export const decodeHeader = (req: Request): UserJWT => {
   const authHeader =
     req.headers['authorization'] || req['cookies']['authorization'];
 
@@ -29,7 +24,7 @@ export const decodeHeader = (req: Request): DecodeHeader => {
     if (!decoded.sub) {
       throw new AppUnauthorizedRequest(ERROR_CODE.FAILED_TO_DECODE_AUTH);
     }
-    return decoded.sub as unknown as DecodeHeader;
+    return decoded.sub as unknown as UserJWT;
   } catch (error) {
     throw new AppUnauthorizedRequest(ERROR_CODE.FAILED_TO_DECODE_AUTH, error);
   }

@@ -1,37 +1,55 @@
-import { CurrentUser } from '@decorators/current-user';
-import { RedisService } from '@modules/redis/redis.service';
+import {
+  Args,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+  Subscription,
+} from '@nestjs/graphql';
 import { Inject } from '@nestjs/common';
-import { Args, Float, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { PubSubEngine } from 'graphql-subscriptions';
-import { Player } from '../dtos/playground.model';
+import { PubSub } from 'graphql-subscriptions';
+import { RedisService } from '@modules/redis/redis.service';
 import { PlaygroundService } from '../services/playground.service';
-import { PlaygroundAction } from '../subscriptions/playground.action';
+import { Player } from '../models/playground.model';
+import { Logged } from 'decologger';
+
+export enum PlaygroundAction {
+  USER_JOINED = 'USER_JOINED',
+  USER_MOVED = 'USER_MOVED',
+  USER_DISCONNECTED = 'USER_DISCONNECTED',
+}
 
 @Resolver(() => Player)
 export class PlaygroundResolver {
   constructor(
-    @Inject('PUB_SUB') private pubSub: PubSubEngine,
-    private redisSerivce: RedisService,
+    @Inject('PUB_SUB') private pubSub: PubSub,
+    private redisService: RedisService,
     private playgroundService: PlaygroundService,
   ) {}
 
-  @Query(() => [Player])
-  async players(): Promise<Player[]> {
-    const players = await this.redisSerivce.getList<Player>('new_room');
-
-    return players;
+  @Query(() => [Player], { nullable: 'itemsAndList' })
+  async players(@Args('roomName') roomName: string): Promise<Player[]> {
+    const players = await this.redisService.getList<Player>(roomName);
+    return players || [];
   }
 
   @Mutation(() => Player)
+  @Logged({
+    formatter: (data) => `Execute [${data.methodName}] with ${data.params}`,
+  })
   async userJoinPlayground(
     @Args('userId', { type: () => Int }) userId: number,
+    @Args('roomName') roomName: string,
   ): Promise<Player> {
-    const existedUser = await this.redisSerivce.getHashKey<Player>(
-      'new_room',
+    const existedUser = await this.redisService.getHashKey<Player>(
+      roomName,
       userId.toString(),
     );
 
     if (existedUser) {
+      await this.pubSub.publish(PlaygroundAction.USER_JOINED, {
+        userJoined: existedUser,
+      });
       return existedUser;
     }
 
@@ -41,61 +59,54 @@ export class PlaygroundResolver {
       position: { x: 100, y: 100 },
     };
 
-    await this.redisSerivce.pushToList('new_room', newPlayer);
+    await this.redisService.pushToList(roomName, newPlayer);
     await this.pubSub.publish(PlaygroundAction.USER_JOINED, {
-      userJoined: { userId },
+      userJoined: newPlayer,
     });
     return newPlayer;
   }
 
-  @Mutation(() => Player)
-  async updatePlayerPosition(
-    @Args('userId', { type: () => Int }) userId: number,
-    @Args('x', { type: () => Float }) x: number,
-    @Args('y', { type: () => Float }) y: number,
-  ): Promise<Player> {
-    let currentPlayer = await this.redisSerivce.getData(`player:${userId}`);
-
-    if (!currentPlayer) {
-      const avatarImg = await this.playgroundService.generateRandomAvatar();
-      currentPlayer = {
-        userId,
-        position: { x, y },
-        avatarImg,
-      };
-      console.log(`New player joined game: ${userId}`);
-    } else {
-      currentPlayer.position = { x, y };
-    }
-
-    this.players[userId] = currentPlayer;
-    await this.pubSub.publish(PlaygroundAction.USER_MOVED, {
-      playerMoved: currentPlayer,
-    });
-    return currentPlayer;
+  @Subscription(() => Player)
+  @Logged({
+    formatter: (data) => `Execute [${data.methodName}] with ${data.params}`,
+  })
+  userJoined() {
+    return this.pubSub.asyncIterableIterator(PlaygroundAction.USER_JOINED);
   }
 
-  @Mutation(() => Player)
-  async disconnectUser(@CurrentUser() userId: number) {
-    let userInList: Player[] = await this.redisSerivce.getHashKey(
-      `new_room`,
+  @Subscription(() => Player)
+  userMoved() {
+    return this.pubSub.asyncIterableIterator(PlaygroundAction.USER_MOVED);
+  }
+
+  @Subscription(() => Player)
+  @Logged({
+    formatter: (data) => `Execute [${data.methodName}] with ${data.params}`,
+  })
+  userDisconnected() {
+    return this.pubSub.asyncIterableIterator(
+      PlaygroundAction.USER_DISCONNECTED,
+    );
+  }
+
+  async updatePlayerPositionDirectly(
+    userId: number,
+    x: number,
+    y: number,
+    roomName: string,
+  ) {
+    const player = await this.redisService.getHashKey<Player>(
+      roomName,
       userId.toString(),
     );
-    if (userInList) {
-      await this.redisSerivce.deleteData(`player:${userId}`);
-      await this.redisSerivce.removeFromHash('new_room', userId.toString());
-      await this.pubSub.publish(PlaygroundAction.USER_DISCONNECTED, {
-        userDisconnected: userInList,
-      });
-      return userInList;
+    if (!player) {
+      throw new Error(`Player with userId ${userId} not found`);
     }
-
-    return {
-      userId: -1,
-      position: { x: -1, y: -1 },
-      avatarImg: '',
-    };
+    const updatedPlayer = { ...player, position: { x, y } };
+    await this.redisService.pushToList(roomName, updatedPlayer);
+    await this.pubSub.publish(PlaygroundAction.USER_MOVED, {
+      userMoved: updatedPlayer,
+    });
+    return updatedPlayer;
   }
-
-  //Subscription
 }

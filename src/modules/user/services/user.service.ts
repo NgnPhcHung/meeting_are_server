@@ -23,8 +23,6 @@ export class UserService {
   }
 
   async findById(id?: number) {
-    console.log('idddd', id);
-
     if (!id) throw new AppUnauthorizedRequest(ERROR_CODE.INVALID_USER);
     return this.prisma.users.findUnique({ where: { id } });
   }

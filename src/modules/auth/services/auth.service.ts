@@ -14,6 +14,7 @@ import { SignUpDto } from '../dtos/signup.dto';
 import { hashPassword } from '../utils/hash-password';
 import { TrieService } from './trie/trie.service';
 import { Users } from 'generated/prisma';
+import { UserJWT } from '@types';
 
 @Injectable()
 export class AuthService {
@@ -68,9 +69,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async refreshTokens(refreshToken: string) {
-    console.log('refreshToken', refreshToken);
-
+  async refreshAccessToken(refreshToken: string) {
     const decoded = this.jwtService.verify(refreshToken, {
       secret: process.env.JWT_REFRESH_SECRET,
     });
@@ -80,7 +79,7 @@ export class AuthService {
     }
 
     const hashedRefreshToken = await this.redisService.getData(
-      `refresh:${decoded.sub.userId}`,
+      `refresh:${decoded.sub.id}`,
     );
     if (!hashedRefreshToken) {
       throw new AppForbiddenException(ERROR_CODE.INVALID_TOKEN);
@@ -90,8 +89,7 @@ export class AuthService {
 
     if (!isMatch) throw new AppForbiddenException(ERROR_CODE.INVALID_TOKEN);
 
-    const accessToken = this.getAccessToken(decoded.sub.userId);
-    return accessToken;
+    return this.getAccessToken(decoded.sub);
   }
 
   async logout(userId: number, token: string) {
@@ -111,8 +109,9 @@ export class AuthService {
   }
 
   private getAccessToken(user: Users) {
+    const payload: UserJWT = { id: user.id, role: user.role };
     return this.jwtService.sign(
-      { sub: { userId: user.id, role: user.role } },
+      { sub: payload },
       {
         secret: process.env.JWT_ACCESS_SECRET,
         expiresIn: process.env.ACCESS_EXPIRED_IN,
@@ -122,19 +121,15 @@ export class AuthService {
   }
 
   private generateRefreshToken(user: Users) {
+    const payload: UserJWT = { id: user.id, role: user.role };
     return this.jwtService.sign(
-      { sub: { userId: user.id, role: user.role } },
+      { sub: payload },
       {
         secret: process.env.JWT_REFRESH_SECRET,
         expiresIn: process.env.REFRESH_EXPIRED_IN,
         algorithm: 'HS256',
       },
     );
-
-    // const token = crypto.randomBytes(64).toString('hex');
-    // const expiresAt = new Date(Date.now() + process.env.REFRESH_EXPIRED_IN);
-    //
-    // return { token, expiresAt };
   }
 
   async blacklistToken(token: string, expiresIn: number) {

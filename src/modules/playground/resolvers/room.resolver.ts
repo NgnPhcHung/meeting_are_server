@@ -1,19 +1,36 @@
-import { CurrentUser } from '@decorators/current-user';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { RoomModel } from '../dtos/room.model';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { RoomSerivice } from '../services/room.service';
+import { CreateRoomDto } from '../dtos/createRoom.dto';
+import { Room } from '../models/room.model';
+import { CurrentUser } from '@decorators/currentUser';
+import { Logged } from 'decologger';
 
-@Resolver(() => RoomModel)
+@Resolver(() => Room)
 export class RoomResolver {
   constructor(private roomService: RoomSerivice) {}
 
-  @Mutation(() => RoomModel)
+  @Mutation(() => Room)
+  @Logged({
+    formatter(data) {
+      return `Executee [${data.methodName}] with ${data.params}`;
+    },
+  })
   async createRoom(
     @CurrentUser() userId: number,
-    @Args('room_name', { type: () => String }) roomName: string,
+    @Args('input') input: CreateRoomDto,
   ) {
-    const createdRoom = await this.roomService.createRoom(roomName, userId);
-    console.log('createdRoom', createdRoom);
-    return createdRoom;
+    return this.roomService.createRoom(input, userId);
+  }
+
+  @Query(() => [Room])
+  @Logged({
+    formatter(data) {
+      return `Executee [${data.methodName}] with ${data.params}`;
+    },
+  })
+  async getListRooms(@CurrentUser() userId: number) {
+    const rooms = await this.roomService.getListRooms(userId);
+
+    return rooms;
   }
 }

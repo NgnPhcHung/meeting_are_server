@@ -40,18 +40,19 @@ export class AccessTokenBlacklistGuard implements CanActivate {
       throw new AppUnauthorizedRequest(ERROR_CODE.BLACKLISTED_TOKEN);
     }
 
-    const test = this.jwtService.decode(token);
+    this.jwtService.decode(token);
     return true;
   }
 
   private extractTokenFromHeader(request: Request): string | null {
-    const authHeader = request.headers['authorization'];
+    try {
+      const authHeader = request.cookies['authorization'];
+      if (!authHeader) return null;
 
-    if (!authHeader) return null;
+      const [bearer, token] = authHeader.split(' ');
+      if (bearer !== 'Bearer' || !token) return null;
 
-    const [bearer, token] = authHeader.split(' ');
-    if (bearer !== 'Bearer' || !token) return null;
-
-    return token;
+      return token;
+    } catch (error) {}
   }
 }

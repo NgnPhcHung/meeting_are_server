@@ -11,6 +11,7 @@ type UserModel {
 
 type AuthResponse {
   accessToken: String!
+  refreshToken: String!
 }
 
 type Position {
@@ -24,7 +25,8 @@ type Player {
   avatarImg: String!
 }
 
-type RoomModel {
+type Room {
+  id: Int!
   roomName: String!
   ownerId: Int!
   participants: [Int!]!
@@ -33,17 +35,16 @@ type RoomModel {
 type Query {
   ping: String!
   getMe: UserModel!
-  players: [Player!]!
+  players(roomName: String!): [Player]
+  getListRooms: [Room!]!
 }
 
 type Mutation {
   login(input: SignInDto!): AuthResponse!
   register(input: SignUpDto!): AuthResponse!
   refreshAccessToken: AuthResponse!
-  userJoinPlayground(userId: Int!): Player!
-  updatePlayerPosition(userId: Int!, x: Float!, y: Float!): Player!
-  disconnectUser: Player!
-  createRoom(room_name: String!): RoomModel!
+  userJoinPlayground(userId: Int!, roomName: String!): Player!
+  createRoom(input: CreateRoomDto!): Room!
 }
 
 input SignInDto {
@@ -56,6 +57,10 @@ input SignUpDto {
   password: String!
   username: String!
   role: String!
+}
+
+input CreateRoomDto {
+  roomName: String!
 }
 
 type Subscription {

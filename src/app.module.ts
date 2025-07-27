@@ -1,4 +1,3 @@
-import { GqlThrottlerGuard } from '@guards/throttle.guard';
 import { AuthModule } from '@modules/auth/auth.module';
 import { UserModule } from '@modules/user/user.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -11,11 +10,11 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AppRedisModule } from '@modules/redis/redis.module';
 import { PrismaModule } from '@modules/prisma/prisma.module';
 import { AccessTokenBlacklistGuard } from '@guards/blacklist.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { PlaygroundModule } from '@modules/playground/playground.module';
+import { SocketModule } from '@modules/socket/socket.module';
 
 @Module({
   imports: [
@@ -23,10 +22,8 @@ import { PlaygroundModule } from '@modules/playground/playground.module';
     CacheModule.register(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      installSubscriptionHandlers: true,
       subscriptions: {
         'graphql-ws': true,
-        'subscriptions-transport-ws': true,
       },
       autoSchemaFile: 'src/schemas/schema.gql',
       graphiql: true,
@@ -37,6 +34,13 @@ import { PlaygroundModule } from '@modules/playground/playground.module';
         };
       },
       formatError(formattedError) {
+        console.error('[GraphQL Error]', {
+          message: formattedError.message,
+          path: formattedError.path,
+          extensions: formattedError.extensions,
+          originalError: formattedError.extensions.originalError,
+        });
+
         return {
           message: formattedError.message,
           path: formattedError.path,
@@ -63,12 +67,12 @@ import { PlaygroundModule } from '@modules/playground/playground.module';
     }),
 
     ScheduleModule.forRoot(),
-    AppRedisModule,
     AuthModule,
     UserModule,
     PrismaModule,
     JwtModule.register({}),
     PlaygroundModule,
+    SocketModule,
   ],
   controllers: [AppController],
   providers: [
@@ -77,7 +81,7 @@ import { PlaygroundModule } from '@modules/playground/playground.module';
     //   provide: APP_GUARD,
     //   useClass: GqlThrottlerGuard,
     // },
-    // { provide: APP_GUARD, useClass: AccessTokenBlacklistGuard },
+    { provide: APP_GUARD, useClass: AccessTokenBlacklistGuard },
   ],
 })
 export class AppModule {}

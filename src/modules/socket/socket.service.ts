@@ -1,3 +1,4 @@
+import { PlaygroundResolver } from '@modules/playground/resolvers/playground.resolver';
 import { UseFilters } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -12,14 +13,14 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { WebsocketsExceptionFilter } from './socket.exception-filter';
-import multiavatar from '@multiavatar/multiavatar';
-import { createCanvas, loadImage } from 'canvas';
+import { Logged } from 'decologger';
 
 @WebSocketGateway({
   cors: {
     origin: 'http://localhost:3000',
     credentials: true,
   },
+  path: '/socket.io/',
 })
 @UseFilters(new WebsocketsExceptionFilter())
 export class SocketService
@@ -27,63 +28,115 @@ export class SocketService
 {
   private positions = new Map<
     string,
-    { position: { x: number; y: number }; avatarImg: string }
+    {
+      position: { x: number; y: number };
+      avatarImg: string;
+      userId: number;
+      roomName?: string;
+    }
   >();
 
   @WebSocketServer()
   server: Server;
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private playgroundResolver: PlaygroundResolver,
+  ) {}
 
   afterInit(server: Server) {
-    console.log('Server initialized');
+    console.log('Socket.IO server initialized');
     this.positions.clear();
   }
 
   async handleConnection(socket: Socket) {
     console.log(`Connected: ${socket.id}`);
-    const avatarImg = await this.generateRandomAvatar();
-    this.positions.set(socket.id, {
-      avatarImg,
-      position: { x: 100, y: 100 },
-    });
-    socket.emit('init', Object.fromEntries(this.positions));
+    const userId = socket.handshake.query.userId as string;
+    const roomName = socket.handshake.query.roomName as string;
+
+    if (!userId) {
+      socket.disconnect(true);
+      return;
+    }
+
+    // if (roomName) {
+    //   socket.join(roomName);
+    //   console.log(`Socket ${socket.id} joined room ${roomName}`);
+    //   this.positions.set(socket.id, {
+    //     userId: parseInt(userId, 10),
+    //     position: { x: 100, y: 100 },
+    //     avatarImg: '',
+    //     roomName,
+    //   });
+    //   this.server
+    //     .to(roomName)
+    //     .emit('player_joined', { userId: parseInt(userId, 10) });
+    // }
   }
 
   handleDisconnect(socket: Socket) {
     console.log(`Disconnected: ${socket.id}`);
-    this.positions.delete(socket.id);
-    socket.broadcast.emit('player_left', socket.id);
+    const userId = socket.handshake.query.userId as string;
+    const roomName = socket.handshake.query.roomName as string;
+
+    if (userId && roomName) {
+      this.positions.delete(socket.id);
+      this.server
+        .to(roomName)
+        .emit('player_left', { userId: parseInt(userId, 10) });
+      socket.leave(roomName);
+    }
+  }
+
+  @SubscribeMessage('join_room')
+  @Logged({
+    formatter: (data) =>
+      `Execute [${data.methodName}] with params ${data.params}`,
+  })
+  async handleJoinRoom(
+    @MessageBody() data: { roomName: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const { roomName } = data;
+    if (!roomName) {
+      socket.emit('error', { message: 'Room name is required' });
+      return;
+    }
+
+    socket.join(roomName);
+    console.log(`Socket ${socket.id} joined room ${roomName}`);
+
+    this.server.to(roomName).emit('player_joined', {
+      userId: parseInt(socket.handshake.query.userId as string, 10),
+    });
   }
 
   @SubscribeMessage('move')
-  handleMove(
+  async handleMove(
     @MessageBody()
-    data: { position: { x: number; y: number }; avatarImg: string },
+    data: {
+      position: { x: number; y: number };
+      avatarImg: string;
+      userId: number;
+      roomName: string;
+    },
     @ConnectedSocket() socket: Socket,
   ) {
-    console.log('socket is moving', { data });
-
-    this.positions.set(socket.id, data);
-    socket.broadcast.emit('moved', {
-      id: socket.id,
-      position: data.position,
-    });
-  }
-  private async generateRandomAvatar(): Promise<string> {
-    const seed = Math.random().toString(36).substring(2, 10);
-    const svg = multiavatar(seed, true);
-    const fixedSvg = svg.replace('<svg', '<svg width="64" height="64"');
-
-    const svgBase64 = Buffer.from(fixedSvg).toString('base64');
-    const svgUrl = `data:image/svg+xml;base64,${svgBase64}`;
-    const img = await loadImage(svgUrl);
-
-    const canvas = createCanvas(64, 64);
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, 64, 64);
-
-    const base64 = canvas.toDataURL('image/png');
-    return base64;
+    this.positions.set(socket.id, { ...data, position: data.position });
+    try {
+      await this.playgroundResolver.updatePlayerPositionDirectly(
+        data.userId,
+        data.position.x,
+        data.position.y,
+        data.roomName,
+      );
+      socket.broadcast.emit('moved', {
+        userId: data.userId,
+        position: data.position,
+      });
+    } catch (err) {
+      console.error('Error publishing userMoved:', err);
+      socket.emit('error', { message: err.message });
+    }
   }
 }
