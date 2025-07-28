@@ -4,6 +4,7 @@ import { CreateRoomDto } from '../dtos/createRoom.dto';
 import { Room } from '../models/room.model';
 import { CurrentUser } from '@decorators/currentUser';
 import { Logged } from 'decologger';
+import { UpdateRoomDto } from '../dtos/updateRoom.dto';
 
 @Resolver(() => Room)
 export class RoomResolver {
@@ -12,7 +13,7 @@ export class RoomResolver {
   @Mutation(() => Room)
   @Logged({
     formatter(data) {
-      return `Executee [${data.methodName}] with ${data.params}`;
+      return `Execute [${data.methodName}] with ${data.params}`;
     },
   })
   async createRoom(
@@ -22,15 +23,23 @@ export class RoomResolver {
     return this.roomService.createRoom(input, userId);
   }
 
+  @Mutation(() => Room)
+  @Logged({
+    formatter(data) {
+      return `Execute [${data.methodName}] with ${data.params}`;
+    },
+  })
+  async updateRoom(@Args('input') input: UpdateRoomDto) {
+    return this.roomService.updateRoom(input);
+  }
+
   @Query(() => [Room])
   @Logged({
     formatter(data) {
-      return `Executee [${data.methodName}] with ${data.params}`;
+      return `Execute [${data.methodName}] with ${data.params}`;
     },
   })
   async getListRooms(@CurrentUser() userId: number) {
-    const rooms = await this.roomService.getListRooms(userId);
-
-    return rooms;
+    return this.roomService.getListRooms(userId);
   }
 }
