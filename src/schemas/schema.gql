@@ -45,6 +45,7 @@ type Mutation {
   refreshAccessToken: AuthResponse!
   userJoinPlayground(userId: Int!, roomName: String!): Player!
   createRoom(input: CreateRoomDto!): Room!
+  updateRoom(input: UpdateRoomDto!): Room!
 }
 
 input SignInDto {
@@ -60,6 +61,11 @@ input SignUpDto {
 }
 
 input CreateRoomDto {
+  roomName: String!
+}
+
+input UpdateRoomDto {
+  id: Int!
   roomName: String!
 }
 
