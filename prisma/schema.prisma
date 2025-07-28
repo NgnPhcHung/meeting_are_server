@@ -10,29 +10,52 @@ datasource db {
 }
 
 model Users {
-  id        Int      @id @default(autoincrement())
-  hash      String?  @db.VarChar(255)
-  username  String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  email     String?
-  firstname String?
-  lastname  String?
-  role      UserRole @default(USER)
-  isSynced  Boolean? @default(false) @map("is_synced")
-  Rooms     Rooms[]
+  id                    Int            @id @default(autoincrement())
+  hash                  String?        @db.VarChar(255)
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @default(now()) @updatedAt @map("updated_at")
+  username              String         @unique @db.VarChar(255)
+  password              String         @db.VarChar(255)
+  email                 String?
+  firstname             String?
+  lastname              String?
+  role                  UserRole       @default(USER)
+  isSynced              Boolean?       @default(false) @map("is_synced")
+  Rooms                 Rooms[]
+  sentNotifications     Notification[] @relation("sent_notifications")
+  receivedNotifications Notification[] @relation("received_notifications")
 
   @@map("users")
 }
 
 model Rooms {
-  id           Int     @id @default(autoincrement())
-  hash         String? @db.VarChar(255)
-  roomName     String  @map("room_name")
-  owner        Users   @relation(fields: [ownerId], references: [id])
-  ownerId      Int     @map("owner_id")
+  id           Int      @id @default(autoincrement())
+  hash         String?  @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+  roomName     String   @map("room_name")
+  owner        Users    @relation(fields: [ownerId], references: [id])
+  ownerId      Int      @map("owner_id")
   participants Int[]
 
   @@map("rooms")
+}
+
+model Notification {
+  id         Int      @id @default(autoincrement())
+  hash       String?  @db.VarChar(255)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+  receiverId Int      @map("receiver_id")
+  receiver   Users    @relation(fields: [receiverId], references: [id], name: "received_notifications")
+  senderId   Int
+  sender     Users    @relation(fields: [senderId], references: [id], name: "sent_notifications")
+  title      String
+  message    String
+  body       Json?
+  isRead     Boolean? @default(false) @map("is_read")
+
+  @@map("notifications")
 }
 
 enum UserRole {
