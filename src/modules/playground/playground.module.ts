@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
 import { PubSub } from 'graphql-subscriptions';
-import { RoomSerivice } from './services/room.service';
+import { RoomService } from './services/room.service';
 import { PlaygroundService } from './services/playground.service';
 import { PlaygroundResolver } from './resolvers/playground.resolver';
 import { RoomResolver } from './resolvers/room.resolver';
 import { PrismaModule } from '@modules/prisma/prisma.module';
 import { AppRedisModule } from '@modules/redis/redis.module';
+import { MailModule } from '@modules/mail/mail.module';
 
 @Module({
-  imports: [PrismaModule, AppRedisModule],
+  imports: [PrismaModule, AppRedisModule, MailModule],
   providers: [
     PlaygroundResolver,
     RoomResolver,
@@ -16,7 +17,7 @@ import { AppRedisModule } from '@modules/redis/redis.module';
       provide: 'PUB_SUB',
       useValue: new PubSub(),
     },
-    RoomSerivice,
+    RoomService,
     PlaygroundService,
   ],
   exports: [PlaygroundService, PlaygroundResolver],

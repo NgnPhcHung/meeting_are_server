@@ -7,6 +7,7 @@ import { AuthResponse } from './models/auth-response.model';
 import { UserModel } from './models/user.model';
 import { AuthService } from './services/auth.service';
 import { Logged } from 'decologger';
+import { MailService } from '@modules/mail/mail.service';
 
 @Resolver(() => UserModel)
 export class AuthResolver {

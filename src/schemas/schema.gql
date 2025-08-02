@@ -46,6 +46,7 @@ type Mutation {
   userJoinPlayground(userId: Int!, roomName: String!): Player!
   createRoom(input: CreateRoomDto!): Room!
   updateRoom(input: UpdateRoomDto!): Room!
+  inviteToRoom(input: InviteToRoomDto!): Boolean!
 }
 
 input SignInDto {
@@ -67,6 +68,11 @@ input CreateRoomDto {
 input UpdateRoomDto {
   id: Int!
   roomName: String!
+}
+
+input InviteToRoomDto {
+  roomId: Int!
+  participants: [String!]!
 }
 
 type Subscription {
