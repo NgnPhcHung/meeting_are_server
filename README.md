@@ -4,8 +4,10 @@
 - [x] CORS 
 - [x] Rate Limiting 
 - [x] Find username and suggest new one (Trie)
-- [ ] Setup tokens
-- [ ] Setup realtime intergration
+- [x] Setup tokens
+- [x] Setup realtime intergration
+- [ ] invitation
+- [ ] limit access
 
 # How to use 
 ## Setup env
@@ -33,5 +35,8 @@ docker compose config
 
 docker compose up -d
 ```
+
+----
+link create app password: <https://myaccount.google.com/apppasswords> 
 
 

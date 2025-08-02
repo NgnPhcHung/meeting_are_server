@@ -13,7 +13,7 @@ importers:
         version: 1.0.7
       '@nestjs-modules/ioredis':
         specifier: ^2.0.2
-        version: 2.0.2(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(@nestjs/typeorm@11.0.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3))))(@prisma/client@6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3))(ioredis@5.6.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))
+        version: 2.0.2(@grpc/grpc-js@1.13.4)(@grpc/proto-loader@0.7.15)(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(@nestjs/typeorm@11.0.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3))))(@prisma/client@6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3))(ioredis@5.6.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))
       '@nestjs/apollo':
         specifier: ^13.1.0
         version: 13.1.0(@apollo/server@4.12.0(graphql@16.10.0))(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(@nestjs/graphql@13.1.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(class-transformer@0.5.1)(class-validator@0.14.1)(graphql@16.10.0)(reflect-metadata@0.2.2))(graphql@16.10.0)
@@ -98,6 +98,9 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
+      nodemailer:
+        specifier: ^7.0.5
+        version: 7.0.5
       passport:
         specifier: ^0.7.0
         version: 0.7.0
@@ -141,6 +144,9 @@ importers:
       '@types/node':
         specifier: ^20.3.1
         version: 20.17.30
+      '@types/nodemailer':
+        specifier: ^6.4.17
+        version: 6.4.17
       '@types/passport-jwt':
         specifier: ^4.0.1
         version: 4.0.1
@@ -231,6 +237,7 @@ packages:
 
   '@apollo/server-gateway-interface@1.1.1':
     resolution: {integrity: sha512-pGwCl/po6+rxRmDMFgozKQo2pbsSwE91TpsDBAOgf74CRDPXHHtM88wbwjab0wMMZh95QfR45GGyDIdhY24bkQ==}
+    deprecated: '@apollo/server-gateway-interface v1 is part of Apollo Server v4, which is deprecated and will transition to end-of-life on January 26, 2026. As long as you are already using a non-EOL version of Node.js, upgrading to v2 should take only a few minutes. See https://www.apollographql.com/docs/apollo-server/previous-versions for details.'
     peerDependencies:
       graphql: 14.x || 15.x || 16.x
 
@@ -244,6 +251,7 @@ packages:
   '@apollo/server@4.12.0':
     resolution: {integrity: sha512-Z5RNTCnIia+dFsP5HW2ugQMrIOWgyNWyKP+jMVXthp/ECjYyyRYPC41ukCDwxHQY4vNZ3rgbgqroWVQUGFt2gA==}
     engines: {node: '>=14.16.0'}
+    deprecated: Apollo Server v4 is deprecated and will transition to end-of-life on January 26, 2026. As long as you are already using a non-EOL version of Node.js, upgrading to v5 should take only a few minutes. See https://www.apollographql.com/docs/apollo-server/previous-versions for details.
     peerDependencies:
       graphql: ^16.6.0
 
@@ -538,6 +546,15 @@ packages:
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
+  '@grpc/grpc-js@1.13.4':
+    resolution: {integrity: sha512-GsFaMXCkMqkKIvwCQjCrwH+GHbPKBjhwo/8ZuUkWHqbI73Kky9I+pQltrlT0+MWpedCoosda53lgjYfyEPgxBg==}
+    engines: {node: '>=12.10.0'}
+
+  '@grpc/proto-loader@0.7.15':
+    resolution: {integrity: sha512-tMXdRCfYVixjuFK+Hk0Q1s38gV9zDiDJfWL3h1rv4Qc39oILCu1TRTDt7+fGUI8K4G1Fj125Hx/ru3azECWTyQ==}
+    engines: {node: '>=6'}
+    hasBin: true
+
   '@humanwhocodes/config-array@0.13.0':
     resolution: {integrity: sha512-DZLEEqFWQFiyK6h5YIeynKx7JlvCYWL0cImfSRXZ9l4Sg2efkFGTuFf6vzXjK1cq6IYkU+Eg/JizXw+TD2vRNw==}
     engines: {node: '>=10.10.0'}
@@ -655,6 +672,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@js-sdsl/ordered-map@4.4.2':
+    resolution: {integrity: sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==}
 
   '@keyv/serialize@1.0.3':
     resolution: {integrity: sha512-qnEovoOp5Np2JDGonIDL6Ayihw0RhnRh6vxPuHo4RDn1UOzwEo4AeIfpL6UGIrsceWrCMiVPgwRjbHu4vYFc3g==}
@@ -1144,6 +1164,9 @@ packages:
 
   '@types/node@20.19.2':
     resolution: {integrity: sha512-9pLGGwdzOUBDYi0GNjM97FIA+f92fqSke6joWeBjWXllfNxZBs7qeMF7tvtOIsbY45xkWkxrdwUfUf3MnQa9gA==}
+
+  '@types/nodemailer@6.4.17':
+    resolution: {integrity: sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==}
 
   '@types/passport-jwt@4.0.1':
     resolution: {integrity: sha512-Y0Ykz6nWP4jpxgEUYq8NoVZeCQPo1ZndJLfapI249g1jHChvRfZRO/LS3tqu26YgAS/laI1qx98sYGz0IalRXQ==}
@@ -2701,6 +2724,9 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
+  lodash.camelcase@4.3.0:
+    resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
+
   lodash.defaults@4.2.0:
     resolution: {integrity: sha512-qjxPLHd3r5DnsdGacqOMU6pb/avJzdh9tFX2ymgoZE27BmjXrNy/y4LoaiTeAb+O3gL8AfpJGtqfX/ae2leYYQ==}
 
@@ -2754,6 +2780,9 @@ packages:
 
   long@4.0.0:
     resolution: {integrity: sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==}
+
+  long@5.3.2:
+    resolution: {integrity: sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==}
 
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
@@ -2925,6 +2954,10 @@ packages:
 
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
+
+  nodemailer@7.0.5:
+    resolution: {integrity: sha512-nsrh2lO3j4GkLLXoeEksAMgAOqxOv6QumNRVQTJwKH4nuiww6iC2y7GyANs9kRAxCexg3+lTWM3PZ91iLlVjfg==}
+    engines: {node: '>=6.0.0'}
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -3166,6 +3199,10 @@ packages:
   prompts@2.4.2:
     resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}
     engines: {node: '>= 6'}
+
+  protobufjs@7.5.3:
+    resolution: {integrity: sha512-sildjKwVqOI2kmFDiXQ6aEB0fjYTafpEvIBs8tOR8qI4spuL9OPROLVu2qZqi/xgCfsHIwVqlaF8JBjWFHnKbw==}
+    engines: {node: '>=12.0.0'}
 
   proxy-addr@2.0.7:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
@@ -4388,6 +4425,20 @@ snapshots:
     dependencies:
       graphql: 16.10.0
 
+  '@grpc/grpc-js@1.13.4':
+    dependencies:
+      '@grpc/proto-loader': 0.7.15
+      '@js-sdsl/ordered-map': 4.4.2
+    optional: true
+
+  '@grpc/proto-loader@0.7.15':
+    dependencies:
+      lodash.camelcase: 4.3.0
+      long: 5.3.2
+      protobufjs: 7.5.3
+      yargs: 17.7.2
+    optional: true
+
   '@humanwhocodes/config-array@0.13.0':
     dependencies:
       '@humanwhocodes/object-schema': 2.0.3
@@ -4610,6 +4661,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
+  '@js-sdsl/ordered-map@4.4.2':
+    optional: true
+
   '@keyv/serialize@1.0.3':
     dependencies:
       buffer: 6.0.3
@@ -4622,13 +4676,13 @@ snapshots:
 
   '@multiavatar/multiavatar@1.0.7': {}
 
-  '@nestjs-modules/ioredis@2.0.2(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(@nestjs/typeorm@11.0.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3))))(@prisma/client@6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3))(ioredis@5.6.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))':
+  '@nestjs-modules/ioredis@2.0.2(@grpc/grpc-js@1.13.4)(@grpc/proto-loader@0.7.15)(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(@nestjs/typeorm@11.0.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3))))(@prisma/client@6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3))(ioredis@5.6.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))':
     dependencies:
       '@nestjs/common': 10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/core': 10.4.17(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@10.4.17)(@nestjs/websockets@11.1.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       ioredis: 5.6.1
     optionalDependencies:
-      '@nestjs/terminus': 10.2.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(@nestjs/typeorm@11.0.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3))))(@prisma/client@6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3))(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))
+      '@nestjs/terminus': 10.2.0(@grpc/grpc-js@1.13.4)(@grpc/proto-loader@0.7.15)(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(@nestjs/typeorm@11.0.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3))))(@prisma/client@6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3))(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))
     transitivePeerDependencies:
       - '@grpc/grpc-js'
       - '@grpc/proto-loader'
@@ -4830,7 +4884,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@nestjs/terminus@10.2.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(@nestjs/typeorm@11.0.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3))))(@prisma/client@6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3))(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))':
+  '@nestjs/terminus@10.2.0(@grpc/grpc-js@1.13.4)(@grpc/proto-loader@0.7.15)(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(@nestjs/typeorm@11.0.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3))))(@prisma/client@6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3))(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))':
     dependencies:
       '@nestjs/common': 10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/core': 10.4.17(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@10.4.17)(@nestjs/websockets@11.1.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -4839,6 +4893,8 @@ snapshots:
       reflect-metadata: 0.2.2
       rxjs: 7.8.2
     optionalDependencies:
+      '@grpc/grpc-js': 1.13.4
+      '@grpc/proto-loader': 0.7.15
       '@nestjs/typeorm': 11.0.0(@nestjs/common@10.4.17(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.17)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3)))
       '@prisma/client': 6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3)
       typeorm: 0.3.22(ioredis@5.6.1)(pg@8.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@20.17.30)(typescript@5.8.3))
@@ -5134,6 +5190,10 @@ snapshots:
   '@types/node@20.19.2':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/nodemailer@6.4.17':
+    dependencies:
+      '@types/node': 20.19.2
 
   '@types/passport-jwt@4.0.1':
     dependencies:
@@ -7027,6 +7087,9 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
+  lodash.camelcase@4.3.0:
+    optional: true
+
   lodash.defaults@4.2.0: {}
 
   lodash.includes@4.3.0: {}
@@ -7063,6 +7126,9 @@ snapshots:
   loglevel@1.9.2: {}
 
   long@4.0.0: {}
+
+  long@5.3.2:
+    optional: true
 
   lru-cache@10.4.3: {}
 
@@ -7192,6 +7258,8 @@ snapshots:
   node-int64@0.4.0: {}
 
   node-releases@2.0.19: {}
+
+  nodemailer@7.0.5: {}
 
   normalize-path@3.0.0: {}
 
@@ -7414,6 +7482,22 @@ snapshots:
     dependencies:
       kleur: 3.0.3
       sisteransi: 1.0.5
+
+  protobufjs@7.5.3:
+    dependencies:
+      '@protobufjs/aspromise': 1.1.2
+      '@protobufjs/base64': 1.1.2
+      '@protobufjs/codegen': 2.0.4
+      '@protobufjs/eventemitter': 1.1.0
+      '@protobufjs/fetch': 1.1.0
+      '@protobufjs/float': 1.0.2
+      '@protobufjs/inquire': 1.1.0
+      '@protobufjs/path': 1.1.2
+      '@protobufjs/pool': 1.1.0
+      '@protobufjs/utf8': 1.1.0
+      '@types/node': 20.19.2
+      long: 5.3.2
+    optional: true
 
   proxy-addr@2.0.7:
     dependencies:

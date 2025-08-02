@@ -1,14 +1,15 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { RoomSerivice } from '../services/room.service';
 import { CreateRoomDto } from '../dtos/createRoom.dto';
 import { Room } from '../models/room.model';
 import { CurrentUser } from '@decorators/currentUser';
 import { Logged } from 'decologger';
 import { UpdateRoomDto } from '../dtos/updateRoom.dto';
+import { RoomService } from '../services/room.service';
+import { InviteToRoomDto } from '../dtos/inviteToRoomDto';
 
-@Resolver(() => Room)
+@Resolver()
 export class RoomResolver {
-  constructor(private roomService: RoomSerivice) {}
+  constructor(private roomService: RoomService) {}
 
   @Mutation(() => Room)
   @Logged({
@@ -41,5 +42,14 @@ export class RoomResolver {
   })
   async getListRooms(@CurrentUser() userId: number) {
     return this.roomService.getListRooms(userId);
+  }
+
+  @Mutation(() => Boolean)
+  async inviteToRoom(
+    @CurrentUser() userId: number,
+    @Args('input') input: InviteToRoomDto,
+  ) {
+    await this.roomService.inviteUserToRoom(userId, input);
+    return true;
   }
 }

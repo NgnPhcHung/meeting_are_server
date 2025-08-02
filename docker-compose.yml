@@ -41,7 +41,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
+  
   # backend:
   #   env_file:
   #     - ./.env
@@ -74,3 +74,4 @@ services:
 volumes:
   pddata: {}
   redisdata: {}
+  rabbitmq_data: {}

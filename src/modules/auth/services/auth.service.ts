@@ -13,8 +13,8 @@ import { SignInDto } from '../dtos/signin.dto';
 import { SignUpDto } from '../dtos/signup.dto';
 import { hashPassword } from '../utils/hash-password';
 import { TrieService } from './trie/trie.service';
-import { Users } from 'generated/prisma';
 import { UserJWT } from '@types';
+import { Users } from 'generated/prisma';
 
 @Injectable()
 export class AuthService {
